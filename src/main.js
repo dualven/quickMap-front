@@ -4,11 +4,16 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import ElementUI  from 'element-ui'
+import VueClipboard from 'vue-clipboard2'
+import 'element-ui/lib/theme-chalk/index.css'
 
 Vue.config.productionTip = false
-
-import 'element-ui/lib/theme-chalk/index.css'
+//ElementUI
 Vue.use(ElementUI);
+
+//VueClipboard
+VueClipboard.config.autoSetContainer = true 
+Vue.use(VueClipboard)
 
 /* eslint-disable no-new */
 new Vue({

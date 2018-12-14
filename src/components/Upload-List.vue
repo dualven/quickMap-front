@@ -15,7 +15,6 @@
 </template>
 <script>
 import constant from "@/config/Constant";
-import Clipboard from "clipboard";
 export default {
   mounted() {
     if (!String.prototype.endsWith) {
