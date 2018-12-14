@@ -6,7 +6,10 @@ import router from './router'
 import ElementUI  from 'element-ui'
 import VueClipboard from 'vue-clipboard2'
 import 'element-ui/lib/theme-chalk/index.css'
+//animate.css
+import animated from 'vue2-animate/dist/vue2-animate.min.css' 
 
+Vue.use(animated);
 Vue.config.productionTip = false
 //ElementUI
 Vue.use(ElementUI);
@@ -14,6 +17,7 @@ Vue.use(ElementUI);
 //VueClipboard
 VueClipboard.config.autoSetContainer = true 
 Vue.use(VueClipboard)
+
 
 /* eslint-disable no-new */
 new Vue({

@@ -1,5 +1,5 @@
 <template>
-  <div :class="display">
+  <div v-show="visible">
     <el-tabs type="card">
       <el-tab-pane label="地址" >
         <code v-html="urls" class="cp"></code>
@@ -8,7 +8,9 @@
         <code v-html="dels" class="cp"></code>
       </el-tab-pane>
     </el-tabs>
-    <el-button type="primary" class="cp_btn" size="small" @click="copy">
+    <el-button type="primary" class="cp_btn" size="small" 
+            v-clipboard:copyhttplist="clickBoard"
+            v-clipboard:success="copySuccess">
       <i class="el-icon-document">复制到剪贴板</i>
     </el-button>
   </div>
@@ -33,29 +35,30 @@ export default {
     };
   },
   methods: {
-    copy() {
+    copySuccess() {
+      this.$message({
+        message: "复制成功",
+        type: "success"
+      });
     }
   },
   computed: {
-    display() {
-      return this.visible ? "display" : "undisplay";
-    },
     urls() {
-      var self = this;
-      var str = "";
+      let self = this;
+      let str = "";
       self.dataSource.forEach(e => {
         str += e.downloadUrl +
           "</br>";
       });
+      this.clickBoard = self.dataSource.map(e=>e.downloadUrl).join(';');
       return str;
     },
     dels() {
-      var self = this;
-      var baseAddr = self.serverAddr.delete;
-      var str = "";
+      let self = this;
+      let baseAddr = self.serverAddr.delete;
+      let str = "";
       self.dataSource.forEach(e => {
-        str += baseAddr + e.delParam
-          "</br>";
+        str += baseAddr + e.delParam + "</br>";
       });
       return str;
     }

@@ -16,7 +16,7 @@ export default {
       for (let i = 0; i < this.dotsNum; i++) {
         this.colorList.push(`rgba(${rndCl()},${rndCl()},${rndCl()},1)`);
       }
-      var base_list = [];
+      let base_list = [];
       canvas.width = width;
       canvas.height = height;
 

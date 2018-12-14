@@ -14,14 +14,16 @@
       </div>
     </el-header>
     <el-main class="m">
-      <transition>
-        <router-view></router-view>
+      <transition mode="out-in" name="fadeDown">
+        <router-view  style="animation-duration: 0.5s"></router-view>
       </transition>
     </el-main>
     <el-footer class="f">Copyright Ⓒ 2018</el-footer>
   </el-container>
 </template>
 <script>
+//animate.css
+import animated from 'vue2-animate/dist/vue2-animate.min.css' 
 export default {
 };
 </script>
@@ -42,6 +44,7 @@ export default {
   margin-left: auto;
   margin-right: auto;
   height: 100%;
+  overflow: hidden;
 }
 .logo {
   font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB",

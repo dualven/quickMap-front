@@ -1,26 +1,26 @@
 <template>
   <div class="body">
+    <h1>搜索</h1>
     <el-autocomplete
       v-model="inputVal.string"
       :fetch-suggestions="fetch"
-      placeholder="请输入文件名称.支持自动补全,上下切换,Enter获取结果"
+      placeholder="请输入文件名称.支持自动补全.↑↓切换.Enter获取结果"
       @select="handleSelect"
       :trigger-on-focus="false"
       clearable
       :minlength="2"
+      @keyup.enter.native="enterfetch"
     >
       <template slot-scope="{item}">
         <span class="solt-item">{{ item.string }}</span> &nbsp;&nbsp;&nbsp;&nbsp;
         <span class="algolia-highlight solt-item">>>查看结果</span>
       </template>
     </el-autocomplete>
-
-    <div class="body" v-show=" !searchResVisable"><div>或尝试 <span class="algolia-highlight ">高级搜索</span></div> </div>
+    <span style="margin-left:30px;">或&nbsp;&nbsp;<span class="algolia-highlight" >高级搜索</span></span> 
 
     <el-table
       :data="searchData"
       v-show="searchResVisable"
-      v-loading="loading"
     >
       <el-table-column label="序号" width="65">
         <template slot-scope="scope">
@@ -67,7 +67,7 @@
             class="inline"
             v-clipboard:copyhttplist="scope.row.downloadUrl"
             v-clipboard:success="copySuccess"
-          >复制到剪贴板</el-button>
+          >复制链接到剪贴板</el-button>
           <el-button
             size="mini"
             type="danger"
@@ -103,24 +103,26 @@ export default {
   data() {
     return {
       serverAddr: constant.serverAddr, //服务器地址
-      inputVal: [],
+      inputVal: {},
       searchData: [],
       loading: true,
       searchResVisable: false
     };
   },
   methods: {
+    enterfetch(e){
+        this.handleSelect(this.inputVal);
+    },
     fetch(str, cb) {
+      var self = this;
       setTimeout(() => {
-        str
-          ? axios
-              .post(this.serverAddr.prefix + str)
+        str? axios.post(this.serverAddr.prefix + str)
               .then(function(resp) {
                 cb(resp.data);
               })
               .catch(function(error) {
                 console.error(error);
-                this.$message({
+                self.$message({
                   message: "服务器异常",
                   type: "error"
                 });
@@ -131,14 +133,14 @@ export default {
     handleSelect(item) {
       let self = this;
       self.inputVal = item;
-      self.loading = true;
-      axios
-        .post(this.serverAddr.search + item.string)
+      let loading = self.$loading({ fullscreen: true });
+      axios.post(this.serverAddr.search + item.string)
         .then(function(resp) {
-          self.loading = false;
+          loading.close();
           self.initTable(resp.data);
         })
         .catch(function(error) {
+          loading.close();
           console.error(error);
           self.$message({
             message: "服务器异常",
@@ -163,12 +165,14 @@ export default {
     },
     remove(delParam) {
       let self = this;
+      let loading = self.$loading({ fullscreen: true });
       self.$confirm("确定删除?", "确认信息", {
         distinguishCancelAndClose: true,
         confirmButtonText: "好",
         cancelButtonText: "取消"
       }).then(() => {
         axios.post(self.serverAddr.delete + delParam).then(function(resp) {
+          loading.close();
           if (resp.data.success) {
             self.$message({
               message: "删除成功",
@@ -193,7 +197,7 @@ export default {
 
 input,
 .el-input__inner {
-  width: 600px !important;
+  width: 450px !important;
 }
 .body {
   width: 900px;

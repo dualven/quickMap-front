@@ -1,7 +1,10 @@
 <template>
   <div>
     <h1>上传</h1>
-    <div class="el-upload__tip" slot="tip">只能上传{{types}}类型文件，且不超过{{sizeLimit}}KB,每次请求最多上传{{limitPerRequest}}个文件</div>
+    <div
+      class="el-upload__tip"
+      slot="tip"
+    >只能上传{{types}}类型文件，且不超过{{sizeLimit}}KB,每次请求最多上传{{limitPerRequest}}个文件</div>
     <el-button
       style="margin-left: 10px;margin-top:15px;margin-bottom:15px;"
       size="medium"
@@ -11,6 +14,8 @@
       @click="uploadHttpRequest"
     >上传</el-button>
     <el-upload
+      v-loading="loading"
+      element-loading-text="努力上传中"
       ref="upload"
       class="upload-block"
       drag
@@ -46,17 +51,18 @@ export default {
       sizeLimit: constant.sizeLimit, //大小
       limitPerRequest: constant.limitPerRequest, //每次上传的数量
       autoUpload: false,
-      uploadListData : [],
+      uploadListData: [],
       fileList: [], //文件列表
-      dialogImageUrl: "",//预览文件url
-      dialogVisible: false,//预览窗口显示/隐藏
-      uploadListVisable : false,//上传成功后的回调列表显示/隐藏
-      serverAddr: constant.serverAddr,//服务器路径
-      uploaded : false,//标记是否已经上传
+      dialogImageUrl: "", //预览文件url
+      dialogVisible: false, //预览窗口显示/隐藏
+      uploadListVisable: false, //上传成功后的回调列表显示/隐藏
+      serverAddr: constant.serverAddr, //服务器路径
+      uploaded: false, //标记是否已经上传
+      loading: false //显示loading遮罩
     };
   },
-  components :{
-      uploadList
+  components: {
+    uploadList
   },
   computed: {
     //类型
@@ -75,7 +81,7 @@ export default {
     },
     //上传成功钩子
     onSuccess(response) {
-      var body = response.data;
+      let body = response.data;
       if (body.success) {
         this.$refs.upload.clearFiles();
         this.uploadListData = body.data;
@@ -89,21 +95,23 @@ export default {
     },
     //上传请求构建
     uploadHttpRequest() {
-      var self = this;
-      if(self.fileList.length == 0){
-          return;
+      let self = this;
+      if (self.fileList.length == 0) {
+        return;
       }
-      var formData = new FormData();
+      self.loading = true;
+      let formData = new FormData();
       self.fileList.forEach(e => {
         formData.append("file", e.raw);
       });
-      axios.post(this.serverAddr.upload, formData, {
+      axios
+        .post(this.serverAddr.upload, formData, {
           method: "post",
           headers: {
             "Content-Type": "multipart/form-data"
           },
           params: {
-            thumbImage : true
+            thumbImage: true
           },
           transformRequest: [
             function(data) {
@@ -112,16 +120,18 @@ export default {
           ]
         })
         .then(function(resp) {
+          self.loading = false;
           self.onSuccess(resp);
         })
         .catch(function(error) {
-            self.onError(error);
+          self.loading = false;
+          self.onError(error);
         });
     },
     //预览
     onPreview(file) {
-      var self = this;
-      var reader = new FileReader();
+      let self = this;
+      let reader = new FileReader();
       reader.readAsDataURL(file.raw);
       reader.onload = function(e) {
         self.dialogImageUrl = this.result;
