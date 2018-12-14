@@ -22,8 +22,6 @@
   </el-container>
 </template>
 <script>
-//animate.css
-import animated from 'vue2-animate/dist/vue2-animate.min.css' 
 export default {
 };
 </script>
