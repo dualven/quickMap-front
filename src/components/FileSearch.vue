@@ -16,12 +16,40 @@
         <span class="algolia-highlight solt-item">>>查看结果</span>
       </template>
     </el-autocomplete>
-    <span style="margin-left:30px;">或&nbsp;&nbsp;<span class="algolia-highlight" >高级搜索</span></span> 
-
-    <el-table
-      :data="searchData"
-      v-show="searchResVisable"
-    >
+    <span style="margin-left:30px;">
+      或&nbsp;&nbsp;
+      <span class="algolia-highlight" @click="showAdvSearchBar">高级搜索</span>
+    </span>
+      <el-collapse-transition>
+    <div v-show="advSearchBarVisable" style="margin: 8px 8px 8px 8px;">
+      <el-dropdown @command="handleCommand">
+        <span class="el-dropdown-link">所有时间
+          <i class="el-icon-arrow-down el-icon--right"></i>
+        </span>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item command="1">最近一天</el-dropdown-item>
+          <el-dropdown-item command="7">最近一周</el-dropdown-item>
+          <el-dropdown-item command="30">最近一月</el-dropdown-item>
+          <el-dropdown-item command="183">最近半年</el-dropdown-item>
+          <el-dropdown-item command="365">最近一年</el-dropdown-item>
+          <el-dropdown-item command="" divided>自定义:
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+      <el-dropdown @command="handleCommand">
+        <span class="el-dropdown-link">所有类型
+          <i class="el-icon-arrow-down el-icon--right"></i>
+        </span>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item command="jpg">jpg</el-dropdown-item>
+          <el-dropdown-item command="png">png</el-dropdown-item>
+          <el-dropdown-item command="bmp">bmp</el-dropdown-item>
+          <el-dropdown-item command="gif">gif</el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+    </div>
+      </el-collapse-transition>
+    <el-table :data="searchData" v-show="searchResVisable">
       <el-table-column label="序号" width="65">
         <template slot-scope="scope">
           <span style="font-size:12px;">{{ scope.$index + 1 }}</span>
@@ -67,7 +95,7 @@
             class="inline"
             v-clipboard:copyhttplist="scope.row.downloadUrl"
             v-clipboard:success="copySuccess"
-          >复制链接到剪贴板</el-button>
+          >复制</el-button>
           <el-button
             size="mini"
             type="danger"
@@ -103,20 +131,35 @@ export default {
   data() {
     return {
       serverAddr: constant.serverAddr, //服务器地址
-      inputVal: {},
-      searchData: [],
-      loading: true,
-      searchResVisable: false
+      inputVal: {},//输出框值
+      searchData: [],//搜索结果
+      loading: true,//显示loading 
+      searchResVisable: false,//显示结果列表
+      advSearchBarVisable : false,//显示高级搜索栏
+      advanceSearchParam : {
+          before : null,
+          after : null,
+          suffix : null,
+      }
     };
   },
   methods: {
-    enterfetch(e){
-        this.handleSelect(this.inputVal);
+    handleCommand(val){
+      console.log(val);
+    },
+    showAdvSearchBar(){
+      this.inputVal = "";
+      this.advSearchBarVisable = ! this.advSearchBarVisable;
+    },
+    enterfetch(e) {
+      this.handleSelect(this.inputVal);
     },
     fetch(str, cb) {
       var self = this;
       setTimeout(() => {
-        str? axios.post(this.serverAddr.prefix + str)
+        str
+          ? axios
+              .post(this.serverAddr.prefix + str)
               .then(function(resp) {
                 cb(resp.data);
               })
@@ -134,7 +177,12 @@ export default {
       let self = this;
       self.inputVal = item;
       let loading = self.$loading({ fullscreen: true });
-      axios.post(this.serverAddr.search + item.string)
+      axios
+        .post(this.serverAddr.search,null,{
+          params: {
+            'fileName': this.inputVal.string,
+          }
+        })
         .then(function(resp) {
           loading.close();
           self.initTable(resp.data);
@@ -166,22 +214,42 @@ export default {
     remove(delParam) {
       let self = this;
       let loading = self.$loading({ fullscreen: true });
-      self.$confirm("确定删除?", "确认信息", {
-        distinguishCancelAndClose: true,
-        confirmButtonText: "好",
-        cancelButtonText: "取消"
-      }).then(() => {
-        axios.post(self.serverAddr.delete + delParam).then(function(resp) {
-          loading.close();
-          if (resp.data.success) {
-            self.$message({
-              message: "删除成功",
-              type: "success"
-            })
-            self.handleSelect(self.inputVal);
-          }
+      let errorHandle = function(error) {
+        loading.close();
+        console.error(error ? error : "服务器异常");
+        self.$message({
+          message: "服务器异常",
+          type: "error"
         });
-      });
+      };
+      self
+        .$confirm("确定删除?", "确认信息", {
+          distinguishCancelAndClose: true,
+          confirmButtonText: "好",
+          cancelButtonText: "取消"
+        })
+        .then(() => {
+          axios
+            .post(self.serverAddr.delete + delParam)
+            .then(function(resp) {
+              loading.close();
+              if (resp.data.success) {
+                self.$message({
+                  message: "删除成功",
+                  type: "success"
+                });
+                self.handleSelect(self.inputVal);
+              } else {
+                errorHandle(data.message);
+              }
+            })
+            .catch(function(error) {
+              errorHandle(error);
+            });
+        })
+        .catch(action => {
+          loading.close();
+        });
     }
   }
 };

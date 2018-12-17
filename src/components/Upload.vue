@@ -104,8 +104,7 @@ export default {
       self.fileList.forEach(e => {
         formData.append("file", e.raw);
       });
-      axios
-        .post(this.serverAddr.upload, formData, {
+      axios.post(this.serverAddr.upload, formData, {
           method: "post",
           headers: {
             "Content-Type": "multipart/form-data"

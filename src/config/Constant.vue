@@ -11,7 +11,7 @@ const serverAddr = {
     list : baseAddr + '',
     delete : baseAddr + 'del/',
     prefix : baseAddr + 'prefix/' ,
-    search : baseAddr + 'search/' 
+    search : baseAddr + 'search/exec' 
 };
 export default {
     supportType :supportType,
