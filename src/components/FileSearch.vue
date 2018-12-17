@@ -2,6 +2,7 @@
   <div class="body">
     <h1>搜索</h1>
     <el-autocomplete
+      class="searchBar"
       v-model="inputVal.string"
       :fetch-suggestions="fetch"
       placeholder="请输入文件名称.支持自动补全.↑↓切换.Enter获取结果"
@@ -16,39 +17,51 @@
         <span class="algolia-highlight solt-item">>>查看结果</span>
       </template>
     </el-autocomplete>
-    <span style="margin-left:30px;">
+  <el-button  @click="enterfetch" plain>搜索</el-button>
+    <span style="margin-left:20px;">
       或&nbsp;&nbsp;
       <span class="algolia-highlight" @click="showAdvSearchBar">高级搜索</span>
     </span>
-      <el-collapse-transition>
-    <div v-show="advSearchBarVisable" style="margin: 8px 8px 8px 8px;">
-      <el-dropdown @command="handleCommand">
-        <span class="el-dropdown-link">所有时间
-          <i class="el-icon-arrow-down el-icon--right"></i>
-        </span>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item command="1">最近一天</el-dropdown-item>
-          <el-dropdown-item command="7">最近一周</el-dropdown-item>
-          <el-dropdown-item command="30">最近一月</el-dropdown-item>
-          <el-dropdown-item command="183">最近半年</el-dropdown-item>
-          <el-dropdown-item command="365">最近一年</el-dropdown-item>
-          <el-dropdown-item command="" divided>自定义:
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
-      <el-dropdown @command="handleCommand">
-        <span class="el-dropdown-link">所有类型
-          <i class="el-icon-arrow-down el-icon--right"></i>
-        </span>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item command="jpg">jpg</el-dropdown-item>
-          <el-dropdown-item command="png">png</el-dropdown-item>
-          <el-dropdown-item command="bmp">bmp</el-dropdown-item>
-          <el-dropdown-item command="gif">gif</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
-    </div>
-      </el-collapse-transition>
+    <el-collapse-transition>
+      <div v-show="advSearchBarVisable" style="margin: 8px 8px 8px 8px;">
+        <el-dropdown @command="handleCommand">
+          <span class="el-dropdown-link">
+            {{selectTime}}
+            <i class="el-icon-arrow-down el-icon--right"></i>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item command="time:">所有时间</el-dropdown-item>
+            <el-dropdown-item command="time:customize" divided>自定义:
+              <el-date-picker
+                type="daterange"
+                range-separator="~"
+                size="mini"
+                style="width:100px;"
+                align="center"
+              ></el-date-picker>
+            </el-dropdown-item>
+            <el-dropdown-item command="time:1">最近一天</el-dropdown-item>
+            <el-dropdown-item command="time:7">最近一周</el-dropdown-item>
+            <el-dropdown-item command="time:30">最近一月</el-dropdown-item>
+            <el-dropdown-item command="time:183">最近半年</el-dropdown-item>
+            <el-dropdown-item command="time:365">最近一年</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+        <el-dropdown @command="handleCommand">
+          <span class="el-dropdown-link">
+            {{selectSuffix}}
+            <i class="el-icon-arrow-down el-icon--right"></i>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item command="type:">所有类型</el-dropdown-item>
+            <el-dropdown-item command="type:jpg" divided>jpg</el-dropdown-item>
+            <el-dropdown-item command="type:png">png</el-dropdown-item>
+            <el-dropdown-item command="type:bmp">bmp</el-dropdown-item>
+            <el-dropdown-item command="type:gif">gif</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </div>
+    </el-collapse-transition>
     <el-table :data="searchData" v-show="searchResVisable">
       <el-table-column label="序号" width="65">
         <template slot-scope="scope">
@@ -128,28 +141,89 @@ export default {
       );
     };
   },
+  computed: {
+    selectSuffix() {
+      var map = {
+        jpg: "jpg",
+        png: "png",
+        bmp: "bmp",
+        gif: "gif",
+        "": "所有类型"
+      };
+      return map[this.advanceSearchParam.suffix];
+    },
+    selectTime() {
+      var map = {
+        "1": "最近一天",
+        "7": "最近一周",
+        "30": "最近一月",
+        "183": "最近半年",
+        "365": "最近一年",
+        customize: "自定义",
+        "": "所有时间"
+      };
+      return map[this.selectTimeVal];
+    }
+  },
   data() {
     return {
       serverAddr: constant.serverAddr, //服务器地址
-      inputVal: {},//输出框值
-      searchData: [],//搜索结果
-      loading: true,//显示loading 
-      searchResVisable: false,//显示结果列表
-      advSearchBarVisable : false,//显示高级搜索栏
-      advanceSearchParam : {
-          before : null,
-          after : null,
-          suffix : null,
-      }
+      inputVal: {}, //输出框值
+      searchData: [], //搜索结果
+      loading: true, //显示loading
+      searchResVisable: false, //显示结果列表
+      advSearchBarVisable: false, //显示高级搜索栏
+      advanceSearchParam: {
+        //查询参数
+        before: null,
+        after: null,
+        suffix: ""
+      },
+      selectTimeVal: "" //选择的时间
     };
   },
   methods: {
-    handleCommand(val){
-      console.log(val);
+    handleCommand(cmd) {
+      if (cmd && cmd.startsWith("time:")) {
+        this.handleTime(this.parseVal(cmd));
+      } else if (cmd.startsWith("type")) {
+        this.handleFileType(this.parseVal(cmd));
+      }
     },
-    showAdvSearchBar(){
+    handleTime(val) {
+      if (parseInt(val) != NaN) {
+        let date = new Date();
+        this.advanceSearchParam.after = (date = date.setDate(
+          date.getDate() - val
+        )).valueOf();
+      } else {
+        if (val === "customize") {
+          this.pickDate();
+        }
+      }
+      this.selectTimeVal = val;
+    },
+    pickDate() {},
+    clearInput() {
       this.inputVal = "";
-      this.advSearchBarVisable = ! this.advSearchBarVisable;
+      this.advanceSearchParam.before = null;
+      this.advanceSearchParam.after = null;
+      this.advanceSearchParam.suffix = "";
+      this.selectTimeVal = "";
+    },
+    handleFileType(val) {
+      if (typeof val != "undefined") {
+        this.advanceSearchParam.suffix = val;
+      }
+    },
+    parseVal(cmd) {
+      return cmd.substring(cmd.indexOf(":") + 1);
+    },
+    showAdvSearchBar() {
+      if (this.advSearchBarVisable) {
+        this.clearInput();
+      }
+      this.advSearchBarVisable = !this.advSearchBarVisable;
     },
     enterfetch(e) {
       this.handleSelect(this.inputVal);
@@ -178,9 +252,12 @@ export default {
       self.inputVal = item;
       let loading = self.$loading({ fullscreen: true });
       axios
-        .post(this.serverAddr.search,null,{
+        .post(this.serverAddr.search, null, {
           params: {
-            'fileName': this.inputVal.string,
+            fileName: this.inputVal.string,
+            before: this.advanceSearchParam.before,
+            after: this.advanceSearchParam.after,
+            suffix: this.advanceSearchParam.suffix
           }
         })
         .then(function(resp) {
@@ -263,8 +340,7 @@ export default {
   font-weight: 700;
 }
 
-input,
-.el-input__inner {
+.searchBar {
   width: 450px !important;
 }
 .body {
@@ -275,7 +351,7 @@ input,
 
 @media screen and (max-width: 550px) {
   input,
-  .el-input__inner {
+  .searchBar {
     width: 400px !important;
   }
   .body {
