@@ -17,7 +17,7 @@
         <span class="algolia-highlight solt-item">>>查看结果</span>
       </template>
     </el-autocomplete>
-  <el-button  @click="enterfetch" plain>搜索</el-button>
+    <el-button @click="enterfetch" plain>搜索</el-button>
     <span style="margin-left:20px;">
       或&nbsp;&nbsp;
       <span class="algolia-highlight" @click="showAdvSearchBar">高级搜索</span>
@@ -31,15 +31,6 @@
           </span>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item command="time:">所有时间</el-dropdown-item>
-            <el-dropdown-item command="time:customize" divided>自定义:
-              <el-date-picker
-                type="daterange"
-                range-separator="~"
-                size="mini"
-                style="width:100px;"
-                align="center"
-              ></el-date-picker>
-            </el-dropdown-item>
             <el-dropdown-item command="time:1">最近一天</el-dropdown-item>
             <el-dropdown-item command="time:7">最近一周</el-dropdown-item>
             <el-dropdown-item command="time:30">最近一月</el-dropdown-item>
@@ -76,7 +67,7 @@
       <el-table-column label="时间" width="180">
         <template slot-scope="scope">
           <i class="el-icon-time"></i>
-          <span style="font-size:12px;">{{ new Date(scope.row.timestamp).toMyString()}}</span>
+          <span style="font-size:12px;">{{new Date(scope.row.timestamp).toMyString()}}</span>
         </template>
       </el-table-column>
       <el-table-column label="大小" width="120">
@@ -159,7 +150,6 @@ export default {
         "30": "最近一月",
         "183": "最近半年",
         "365": "最近一年",
-        customize: "自定义",
         "": "所有时间"
       };
       return map[this.selectTimeVal];
@@ -179,7 +169,7 @@ export default {
         after: null,
         suffix: ""
       },
-      selectTimeVal: "" //选择的时间
+      selectTimeVal: "", //选择的时间
     };
   },
   methods: {
@@ -189,32 +179,30 @@ export default {
       } else if (cmd.startsWith("type")) {
         this.handleFileType(this.parseVal(cmd));
       }
+      this.enterfetch(null);
+    },
+    handleFileType(val) {
+      if (typeof val != "undefined") {
+        this.advanceSearchParam.suffix = val;
+      }
     },
     handleTime(val) {
       if (parseInt(val) != NaN) {
         let date = new Date();
-        this.advanceSearchParam.after = (date = date.setDate(
-          date.getDate() - val
-        )).valueOf();
-      } else {
-        if (val === "customize") {
-          this.pickDate();
-        }
+        this.advanceSearchParam.after =
+          (date = date.setDate(date.getDate() - val)).valueOf() || 0;
       }
       this.selectTimeVal = val;
     },
-    pickDate() {},
+    pickDate() {
+
+    },
     clearInput() {
       this.inputVal = "";
       this.advanceSearchParam.before = null;
       this.advanceSearchParam.after = null;
       this.advanceSearchParam.suffix = "";
       this.selectTimeVal = "";
-    },
-    handleFileType(val) {
-      if (typeof val != "undefined") {
-        this.advanceSearchParam.suffix = val;
-      }
     },
     parseVal(cmd) {
       return cmd.substring(cmd.indexOf(":") + 1);
@@ -247,17 +235,25 @@ export default {
           : undefined;
       }, 0);
     },
+    checkParamNull() {
+      return (
+        !this.inputVal.string &&
+        !this.advanceSearchParam.before &&
+        !this.advanceSearchParam.after &&
+        !this.advanceSearchParam.suffix
+      );
+    },
     handleSelect(item) {
+      if (item == null && this.checkParamNull()) return;
       let self = this;
       self.inputVal = item;
       let loading = self.$loading({ fullscreen: true });
-      axios
-        .post(this.serverAddr.search, null, {
+      axios.post(this.serverAddr.search, null, {
           params: {
-            fileName: this.inputVal.string,
-            before: this.advanceSearchParam.before,
-            after: this.advanceSearchParam.after,
-            suffix: this.advanceSearchParam.suffix
+            fileName: self.inputVal.string,
+            before: self.advanceSearchParam.before,
+            after: self.advanceSearchParam.after,
+            suffix: self.advanceSearchParam.suffix
           }
         })
         .then(function(resp) {

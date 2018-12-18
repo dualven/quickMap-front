@@ -4,6 +4,7 @@ import Index from '@/components/Index'
 import Upload from '@/components/Upload';
 import ApiList from '@/components/ApiList';
 import FileSearch from '@/components/FileSearch';
+import About from '@/components/About';
 Vue.use(Router)
 
 export default new Router({
@@ -32,7 +33,11 @@ export default new Router({
         {
           path: '/index/search',
           component: FileSearch
-        }
+        },
+        {
+          path: '/index/about',
+          component: About
+        },
       ]
     }
   ],

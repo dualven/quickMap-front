@@ -11,7 +11,7 @@
     <el-button type="primary" class="cp_btn" size="small" 
             v-clipboard:copyhttplist="clickBoard"
             v-clipboard:success="copySuccess">
-      <i class="el-icon-document">复制到剪贴板</i>
+      <i class="el-icon-document">复制图片地址到剪贴板</i>
     </el-button>
   </div>
 </template>

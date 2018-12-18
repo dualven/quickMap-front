@@ -9,7 +9,6 @@
           <router-link to="/index/upload">上传</router-link>
           <router-link to="/index/search">搜索</router-link>
           <router-link to="/index/about">关于</router-link>
-          <router-link to="/index/apiList">Api</router-link>
         </nav>
       </div>
     </el-header>
@@ -29,11 +28,10 @@ export default {
 .f {
   text-align: center;
   padding: 10px 0;
-  position: absolute;
   width: 100%;
   left: 0;
   bottom: 0;
-  position: absolute;
+  position:fixed
 }
 .m {
   width: -moz-fit-content;
