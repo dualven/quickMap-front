@@ -8,7 +8,9 @@ import VueClipboard from 'vue-clipboard2'
 import 'element-ui/lib/theme-chalk/index.css'
 //animate.css
 import animated from 'vue2-animate/dist/vue2-animate.min.css' 
+import err from '@/config/ErrorHandler'
 
+Vue.prototype.errorHandler = err.errorHandler;
 Vue.use(animated);
 Vue.config.productionTip = false
 //ElementUI

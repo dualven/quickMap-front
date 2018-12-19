@@ -9,6 +9,7 @@
           <router-link to="/index/upload">上传</router-link>
           <router-link to="/index/search">搜索</router-link>
           <router-link to="/index/about">关于</router-link>
+          <a href="#">登录</a>
         </nav>
       </div>
     </el-header>

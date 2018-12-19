@@ -226,12 +226,8 @@ export default {
               .then(function(resp) {
                 cb(resp.data);
               })
-              .catch(function(error) {
-                console.error(error);
-                self.$message({
-                  message: "服务器异常",
-                  type: "error"
-                });
+                .catch(function(error) {
+                  self.errorHandler(error);
               })
           : undefined;
       }, 0);
@@ -262,11 +258,7 @@ export default {
         })
         .catch(function(error) {
           loading.close();
-          console.error(error);
-          self.$message({
-            message: "服务器异常",
-            type: "error"
-          });
+          self.errorHandler(error);
         });
     },
     initTable(data) {
@@ -289,11 +281,7 @@ export default {
       let loading = self.$loading({ fullscreen: true });
       let errorHandle = function(error) {
         loading.close();
-        console.error(error ? error : "服务器异常");
-        self.$message({
-          message: "服务器异常",
-          type: "error"
-        });
+        self.errorHandler(error);
       };
       self
         .$confirm("确定删除?", "确认信息", {

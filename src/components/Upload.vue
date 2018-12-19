@@ -74,10 +74,7 @@ export default {
     //上传异常钩子
     onError(err) {
       console.log(err);
-      this.$message({
-        message: "服务器异常",
-        type: "error"
-      });
+      this.errorHandler(err);
     },
     //上传成功钩子
     onSuccess(response) {
