@@ -214,6 +214,7 @@ export default {
       this.advSearchBarVisable = !this.advSearchBarVisable;
     },
     enterfetch(e) {
+      if (this.checkParamNull()) return;
       this.handleSelect(this.inputVal);
     },
     fetch(str, cb) {
@@ -244,7 +245,6 @@ export default {
       );
     },
     handleSelect(item) {
-      if (item == null && this.checkParamNull()) return;
       let self = this;
       self.inputVal = item;
       let loading = self.$loading({ fullscreen: true });
