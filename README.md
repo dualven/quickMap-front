@@ -3,30 +3,30 @@ quick-map是一个分布式的图床服务器.可以提供高性能,高可用的
 
 # 使用方法  
 
-## 构建
+# 构建
 
-# 安装依赖
+## 安装依赖
 
 ```  
 npm install
 ```  
-# 构建
+## 构建
 
 ```  
 npm run build
 ```  
 
-## 配置
+# 配置
 
 src/config/Constant.vue
 
-# 配置quick-map服务器根地址
+## 配置quick-map服务器根地址
 
 ```  
 const baseAddr = 'http://127.0.0.1:28092'; //服务器地址
 ```
 
-# 其它配置
+## 其它配置
 
 ```  
 const supportType = ['image/jpeg','image/png'];//支持的上传类型
