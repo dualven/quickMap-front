@@ -1,5 +1,5 @@
 <script>
-const supportType = ['image/jpeg','image/png'];//支持的上传类型
+const supportType = ['image/jpeg','image/png',"application/msword"];//支持的上传类型
 const sizeLimit = 1000;//上传文件大小限制(KB)
 const baseAddr = 'http://127.0.0.1:28092'; //服务器地址
 const limitPerRequest = 5;//每次请求的数量限制
