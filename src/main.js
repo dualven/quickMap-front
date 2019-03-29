@@ -10,6 +10,12 @@ import 'element-ui/lib/theme-chalk/index.css'
 import animated from 'vue2-animate/dist/vue2-animate.min.css' 
 import err from '@/config/ErrorHandler'
 import axios from 'axios';
+import "../static/js/jquery-1.4.4.min.js"
+import "../static/js/jquery.ztree.core.js"
+import "../static/js/jquery.ztree.excheck.js"
+import "../static/js/jquery.ztree.exedit.js"
+import "../static/css/demo.css"
+import "../static/css/zTreeStyle/zTreeStyle.css"
 //允许跨域携带cookie
 axios.defaults.withCredentials=true;
 //全局事件

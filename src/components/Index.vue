@@ -9,6 +9,7 @@
           <router-link to="/index/upload">上传</router-link>
           <router-link to="/index/search">搜索</router-link>
           <router-link to="/index/about">关于</router-link>
+          <router-link to="/index/ztree">ztree</router-link>
           <a v-show="userInfo == null" href="#" @click="showLogin">登录</a>
           <el-dropdown @command="userMenuCommand" v-show="userInfo != null">
             <a href="#">{{(userInfo != null && userInfo.nickName) ? userInfo.nickName : ""}}</a>

@@ -5,6 +5,7 @@ import Upload from '@/components/Upload';
 import ApiList from '@/components/ApiList';
 import FileSearch from '@/components/FileSearch';
 import About from '@/components/About';
+import ztree from '@/components/ztree';
 Vue.use(Router)
 
 export default new Router({
@@ -18,6 +19,7 @@ export default new Router({
       name: 'index',
       component: Index,
       children: [
+      
         {
           path: '',
           component: Upload
@@ -37,7 +39,11 @@ export default new Router({
         {
           path: '/index/about',
           component: About
-        },
+        },  
+        {
+            path: '/index/ztree',
+            component: ztree
+          },
       ]
     }
   ],
