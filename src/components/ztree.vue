@@ -10,7 +10,7 @@ export default {
     return {
       message: "yes",
       className :"dark",
-      newCount: 1,
+			newCount: 1,
       setting: {
         view: {
           addHoverDom: this.addHoverDom,
@@ -58,7 +58,21 @@ export default {
   },
   methods: {
     init: function() {
-      $.fn.zTree.init($("#treeDemo"), this.setting, this.zNodes);
+				var mysettings = this.setting;
+				let _self = this;
+				$.ajax({
+				url: "/getAllNodes",
+				type: "get",
+				success:
+					function (result) {
+						console.log('getAllNodess temp',result.yes,(result.maxid)[0]);
+						_self.newCount = (result.maxid)[0].maxid > 100? ((result.maxid)[0].maxid - 100 + 1):1;
+						 $.fn.zTree.init($("#treeDemo"), mysettings, result.yes);
+					},
+				error: function () { console.log('error! edit temp ,should rollback'); }
+
+			});
+     
     },
     beforeDrag: function (treeId, treeNodes) {
 			return false;
@@ -170,18 +184,20 @@ export default {
 			var addStr = "<span class='button add' id='addBtn_" + treeNode.tId
 				+ "' title='add node' onfocus='this.blur();'></span>";
 			sObj.after(addStr);
+			var _self = this;
 			var btn = $("#addBtn_" + treeNode.tId);
 			if (btn) btn.bind("click", function () {
 				var zTree = $.fn.zTree.getZTreeObj("treeDemo");
 				$.ajax({
 				url: "/saveAllNodes",
-				data: { node: [[ (100 + this.newCount),treeNode.id,  "new node" + (this.newCount++),0]] },
+				data: { node: [[ (100 + _self.newCount),treeNode.id,  "new node" + (_self.newCount),0]] },
 				dataType: "text",
 				type: "post",
 				success:
 					function () {
 						console.log('add temp');
-						zTree.addNodes(treeNode, { id: (100 + this.newCount), pId: treeNode.id, name: "new node" + (this.newCount++) });
+						zTree.addNodes(treeNode, { id: (100 + _self.newCount), pId: treeNode.id, name: "new node" + (_self.newCount) });
+						_self.newCount ++;
 					},
 				error: function () { console.log('error! add temp'); }
 

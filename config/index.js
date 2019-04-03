@@ -11,6 +11,36 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
+      "/saveAllNodes": {
+        target: "http://localhost:3000",
+
+        changeOrigin: true,
+        pathRewrite: {
+          '^/saveAllNodes': '/saveAllNodes'
+        }
+      },
+      "/delNode": {
+        target: "http://localhost:3000",
+
+        changeOrigin: true,
+        pathRewrite: {
+          '^/delNode': '/delNode'
+        }
+      },"/getAllNodes": {
+        target: "http://localhost:3000",
+
+        changeOrigin: true,
+        pathRewrite: {
+          '^/getAllNodes': '/getAllNodes'
+        }
+      },"/saveEditNodes": {
+        target: "http://localhost:3000",
+
+        changeOrigin: true,
+        pathRewrite: {
+          '^/saveEditNodes': '/saveEditNodes'
+        }
+      },
     },
 
     // Various Dev Server settings
