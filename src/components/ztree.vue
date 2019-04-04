@@ -251,11 +251,13 @@ export default {
       var pId = treeNode.id;
       var nodes = new Array();
       for (let i = 0; i < data.length; i++) {
-        nodes[i] = new Array(4);
+        nodes[i] = new Array(6);
         nodes[i][0] = _self.newId + i;
         nodes[i][1] = pId;
         nodes[i][2] = data[i].filename;
         nodes[i][3] = 0;
+        nodes[i][4] = data[i].downloadUrl;
+        nodes[i][5] = data[i].thumbImagePath;
       }
       $.ajax({
         url: "/saveAllNodes",
@@ -267,7 +269,7 @@ export default {
         success: function() {
           console.log("add temp");
           nodes.forEach(element => {
-             $.fn.zTree.getZTreeObj("treeDemo").addNodes(treeNode, {
+            $.fn.zTree.getZTreeObj("treeDemo").addNodes(treeNode, {
               id: element[0],
               pId: element[1],
               name: element[2],
