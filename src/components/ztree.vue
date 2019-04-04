@@ -80,7 +80,12 @@ export default {
           console.log("getAllNodess temp", result.yes, result.maxid[0]);
           _self.newCount =
             result.maxid[0].maxid > 100 ? result.maxid[0].maxid - 100 + 1 : 1;
-          _self.newId = result.maxid[0].maxid + 1;
+					_self.newId = result.maxid[0].maxid + 1;
+					result.yes.forEach(element => {
+						element['url'] = element['downloadUrl'];
+							element['target'] = '_blank';
+					});
+					console.log('now the result is ',result.yes);
           $.fn.zTree.init($("#treeDemo"), mysettings, result.yes);
         },
         error: function() {
