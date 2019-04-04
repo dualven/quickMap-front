@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div  v-show="uploadvisible" >
     <h1>上传</h1>
     <div
       class="el-upload__tip"
@@ -82,6 +82,8 @@ export default {
       if (body.success) {
         this.$refs.upload.clearFiles();
         this.uploadListData = body.data;
+        console.log("uploadlist is ",body.data)
+        this.$emit("listenUploadEvent",body.data);
         this.uploadListVisable = true;
         this.uploaded = true;
         this.fileList.length = 0;
@@ -174,7 +176,14 @@ export default {
         }
       }
       this.fileList = fileList;
+    },
+  },
+    props: {
+    uploadvisible: {
+      type: Boolean,
+      default: true
     }
+   
   }
 };
 </script>
